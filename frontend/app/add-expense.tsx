@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API = "http://localhost:5000/api";
+const API_URL = "https://expense-tracker-1-wucy.onrender.com";
 
 export default function AddExpense() {
   const router = useRouter();
@@ -13,7 +13,7 @@ export default function AddExpense() {
   const saveExpense = async () => {
     const token = await AsyncStorage.getItem("token");
 
-    await fetch(`${API}/expenses`, {
+    await fetch(`${API_URL}/expenses`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

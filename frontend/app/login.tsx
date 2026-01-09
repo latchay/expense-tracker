@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API_URL = "http://192.168.31.131:5000"; // 👈 CHANGE THIS
+const API_URL = "https://expense-tracker-1-wucy.onrender.com"; // 👈 CHANGE THIS
 
 export default function Login() {
   const router = useRouter();

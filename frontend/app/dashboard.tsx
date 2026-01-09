@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 
-const API_URL = "http://192.168.31.131:5000"; // ⚠️ CHANGE ONLY IF YOUR IP CHANGES
+const API_URL = "https://expense-tracker-1-wucy.onrender.com"; // ⚠️ CHANGE ONLY IF YOUR IP CHANGES
 
 export default function Dashboard() {
   const router = useRouter();

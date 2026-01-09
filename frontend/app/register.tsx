@@ -2,7 +2,7 @@ import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 
-const API = "http://localhost:5000/api";
+const API_URL = "https://expense-tracker-1-wucy.onrender.com";
 
 export default function Register() {
   const router = useRouter();
@@ -10,7 +10,7 @@ export default function Register() {
   const [password, setPassword] = useState("");
 
   const register = async () => {
-    const res = await fetch(`${API}/register`, {
+    const res = await fetch(`${API_URL}/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
