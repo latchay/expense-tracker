@@ -54,7 +54,7 @@ A full-stack Expense Tracker mobile application built with React Native (Expo) a
 https://expense-tracker-tau-gray.vercel.app/
 
 ### Backend (Render)
-https://<your-backend-render-url>
+https://expense-tracker-1-wucy.onrender.com
 
 ### GitHub Repository
 https://github.com/latchay/expense-tracker
