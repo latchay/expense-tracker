@@ -1,25 +1,16 @@
 import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
 import { useState } from "react";
-import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const API_URL = "https://expense-tracker-1-wucy.onrender.com"; // 👈 CHANGE THIS
+import { useRouter } from "expo-router";
+const API_URL = "https://expense-tracker-1-wucy.onrender.com";
 
 export default function Login() {
   const router = useRouter();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      setError("Email and password are required");
-      return;
-    }
-
-    setLoading(true);
     setError("");
 
     try {
@@ -31,34 +22,27 @@ export default function Login() {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : {};
 
       if (!res.ok) {
         setError(data.message || "Login failed");
-        setLoading(false);
         return;
       }
 
-      // ✅ SAVE TOKEN
       await AsyncStorage.setItem("token", data.token);
-
-      // ✅ GO TO DASHBOARD
       router.replace("/dashboard");
-    } catch (err) {
+    } catch {
       setError("Server not reachable");
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Expense Tracker</Text>
-      <Text style={styles.sub}>Login</Text>
+      <Text style={styles.title}>Expense Tracker</Text>
 
       <TextInput
         placeholder="Email"
-        autoCapitalize="none"
         value={email}
         onChangeText={setEmail}
         style={styles.input}
@@ -74,58 +58,23 @@ export default function Login() {
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
-      <Pressable style={styles.button} onPress={handleLogin} disabled={loading}>
-        <Text style={styles.buttonText}>
-          {loading ? "Please wait..." : "LOGIN"}
-        </Text>
+      <Pressable style={styles.button} onPress={handleLogin}>
+        <Text style={styles.buttonText}>LOGIN</Text>
       </Pressable>
 
       <Pressable onPress={() => router.push("/register")}>
-        <Text style={styles.link}>Don’t have an account? Register</Text>
+        <Text style={styles.link}>New here? Register</Text>
       </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 24,
-    marginTop: 60,
-  },
-  heading: {
-    fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  sub: {
-    fontSize: 22,
-    marginBottom: 20,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 12,
-    marginBottom: 12,
-    borderRadius: 6,
-  },
-  button: {
-    backgroundColor: "#2563eb",
-    padding: 14,
-    borderRadius: 6,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  link: {
-    marginTop: 16,
-    color: "#2563eb",
-    textAlign: "center",
-  },
-  error: {
-    color: "red",
-    marginBottom: 10,
-  },
+  container: { flex: 1, justifyContent: "center", padding: 20 },
+  title: { fontSize: 28, textAlign: "center", marginBottom: 30 },
+  input: { borderWidth: 1, padding: 12, marginBottom: 15, borderRadius: 6 },
+  button: { backgroundColor: "#2563eb", padding: 14, borderRadius: 6 },
+  buttonText: { color: "#fff", textAlign: "center", fontSize: 16 },
+  link: { marginTop: 20, textAlign: "center", color: "#2563eb" },
+  error: { color: "red", marginBottom: 10, textAlign: "center" },
 });
