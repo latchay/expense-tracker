@@ -115,9 +115,6 @@ cd frontend
 npm install
 npm start
 
-APK FILE
-
-The APK file is generated using expo and google drive
 
 AUTHOR:
 Latchaya
