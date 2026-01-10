@@ -5,13 +5,10 @@ import {
   Pressable,
   FlatList,
   StyleSheet,
-  ScrollView,
 } from "react-native";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
-
 const API_URL = "https://expense-tracker-1-wucy.onrender.com";
 
 export default function Dashboard() {
@@ -20,28 +17,40 @@ export default function Dashboard() {
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
 
+  // 🔐 Load expenses
   const loadExpenses = async () => {
     const token = await AsyncStorage.getItem("token");
-    if (!token) return router.replace("/login");
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
 
     const res = await fetch(`${API_URL}/api/expenses`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
+
     const data = await res.json();
     setExpenses(data);
   };
 
+  // ➕ Add expense
   const addExpense = async () => {
     if (!amount || !category) return;
 
     const token = await AsyncStorage.getItem("token");
+
     await fetch(`${API_URL}/api/expenses`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ amount, category }),
+      body: JSON.stringify({
+        amount,
+        category,
+      }),
     });
 
     setAmount("");
@@ -49,12 +58,17 @@ export default function Dashboard() {
     loadExpenses();
   };
 
+  // ❌ Delete expense
   const deleteExpense = async (id: string) => {
     const token = await AsyncStorage.getItem("token");
+
     await fetch(`${API_URL}/api/expenses/${id}`, {
       method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
+
     loadExpenses();
   };
 
@@ -68,41 +82,31 @@ export default function Dashboard() {
   );
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <View style={styles.container}>
       {/* HEADER */}
-      <Text style={styles.heading}>Expense Tracker</Text>
-      <Text style={styles.quote}>
-        “Don’t save what is left after spending, spend what is left after saving.”
-      </Text>
+      <Text style={styles.heading}>Dashboard</Text>
+      <Text style={styles.sub}>Track your spending smartly 💡</Text>
 
-      {/* TOTAL EXPENSE CARD */}
-      <LinearGradient
-        colors={["#6366f1", "#4f46e5"]}
-        style={styles.totalCard}
-      >
-        <Text style={styles.cardLabel}>Total Expense</Text>
-        <Text style={styles.totalAmount}>₹ {total}</Text>
-      </LinearGradient>
+      {/* TOTAL CARD */}
+      <View style={styles.totalCard}>
+        <Text style={styles.totalLabel}>Total Expense</Text>
+        <Text style={styles.totalValue}>₹ {total}</Text>
+      </View>
 
       {/* ADD EXPENSE CARD */}
-      <LinearGradient
-        colors={["#16a34a", "#22c55e"]}
-        style={styles.addCard}
-      >
-        <Text style={styles.cardLabel}>Add New Expense</Text>
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Add Expense</Text>
 
         <TextInput
           placeholder="Amount"
-          placeholderTextColor="#dcfce7"
-          keyboardType="numeric"
           value={amount}
           onChangeText={setAmount}
+          keyboardType="numeric"
           style={styles.input}
         />
 
         <TextInput
           placeholder="Category (Food, Travel...)"
-          placeholderTextColor="#dcfce7"
           value={category}
           onChangeText={setCategory}
           style={styles.input}
@@ -111,20 +115,19 @@ export default function Dashboard() {
         <Pressable style={styles.addBtn} onPress={addExpense}>
           <Text style={styles.addText}>ADD EXPENSE</Text>
         </Pressable>
-      </LinearGradient>
+      </View>
 
       {/* EXPENSE LIST */}
-      <Text style={styles.sectionTitle}>Your Expenses</Text>
+      <Text style={styles.listTitle}>Your Expenses</Text>
 
       <FlatList
         data={expenses}
         keyExtractor={(item) => item.id}
-        scrollEnabled={false}
         ListEmptyComponent={
           <Text style={styles.empty}>No expenses added yet</Text>
         }
         renderItem={({ item }) => (
-          <View style={styles.expenseCard}>
+          <View style={styles.expenseRow}>
             <View>
               <Text style={styles.expenseCategory}>{item.category}</Text>
               <Text style={styles.expenseAmount}>₹ {item.amount}</Text>
@@ -147,68 +150,72 @@ export default function Dashboard() {
       >
         <Text style={styles.logoutText}>LOGOUT</Text>
       </Pressable>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
     padding: 20,
+    backgroundColor: "#f8fafc",
   },
 
   heading: {
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 6,
   },
 
-  quote: {
-    color: "#475569",
+  sub: {
+    color: "#64748b",
     marginBottom: 20,
-    fontStyle: "italic",
   },
 
   totalCard: {
-    borderRadius: 16,
+    backgroundColor: "#2563eb",
     padding: 20,
+    borderRadius: 12,
     marginBottom: 20,
   },
 
-  addCard: {
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 25,
+  totalLabel: {
+    color: "#dbeafe",
+    fontSize: 16,
   },
 
-  cardLabel: {
+  totalValue: {
     color: "#fff",
+    fontSize: 28,
+    fontWeight: "bold",
+    marginTop: 5,
+  },
+
+  card: {
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 20,
+    elevation: 3,
+  },
+
+  cardTitle: {
     fontSize: 18,
     marginBottom: 10,
     fontWeight: "600",
   },
 
-  totalAmount: {
-    color: "#fff",
-    fontSize: 32,
-    fontWeight: "bold",
-  },
-
   input: {
     borderWidth: 1,
-    borderColor: "#bbf7d0",
-    borderRadius: 10,
-    padding: 12,
-    color: "#fff",
+    borderColor: "#e5e7eb",
+    padding: 10,
+    borderRadius: 8,
     marginBottom: 10,
   },
 
   addBtn: {
-    backgroundColor: "#14532d",
+    backgroundColor: "#16a34a",
     padding: 12,
-    borderRadius: 10,
-    marginTop: 5,
+    borderRadius: 8,
   },
 
   addText: {
@@ -217,25 +224,25 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "600",
+  listTitle: {
+    fontSize: 18,
     marginBottom: 10,
+    fontWeight: "600",
   },
 
-  expenseCard: {
+  expenseRow: {
     backgroundColor: "#fff",
     padding: 15,
-    borderRadius: 14,
+    borderRadius: 10,
     marginBottom: 10,
     flexDirection: "row",
     justifyContent: "space-between",
-    elevation: 3,
+    elevation: 2,
   },
 
   expenseCategory: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "500",
   },
 
   expenseAmount: {
@@ -244,25 +251,24 @@ const styles = StyleSheet.create({
 
   delete: {
     color: "#dc2626",
-    fontWeight: "bold",
+    fontWeight: "600",
   },
 
   empty: {
     textAlign: "center",
     color: "#94a3b8",
-    marginVertical: 20,
+    marginTop: 20,
   },
 
   logoutBtn: {
-    backgroundColor: "#020617",
-    padding: 14,
-    borderRadius: 12,
-    marginVertical: 30,
+    marginTop: 10,
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: "#0f172a",
   },
 
   logoutText: {
     color: "#fff",
     textAlign: "center",
-    fontWeight: "600",
   },
 });
