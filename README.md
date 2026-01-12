@@ -115,24 +115,8 @@ cd frontend
 npm install
 npm start
 
-## Screenshots
-
-### Home Page
-Login and registration entry point for users.
-![Home Page][(<img width="1366" height="768" alt="index page" src="https://github.com/user-attachments/assets/9d137961-639e-43f3-940d-8ef297c80f6b" />
 
 
-### Register Page
-User account creation using email and password authentication.
-![Register Page](screenshots/register.png)
-
-### Login Page
-Secure login with authenticated user session handling.
-![Login Page](screenshots/login.png)
-
-### Dashboard
-View total expenses, add new expenses, and manage existing records.
-![Dashboard](screenshots/dashboard.png)
 
 
 
